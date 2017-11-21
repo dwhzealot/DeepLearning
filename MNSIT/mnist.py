@@ -1,57 +1,73 @@
-'''
-Created on 2017-11-21
-@author: dongwh3
-'''
+# coding=gbk  
 import numpy as np  
 import struct  
   
 def loadImageSet(filename, img_num):  
-  
-    binfile = open(filename, 'rb') # è¯»å–äºŒè¿›åˆ¶æ–‡ä»¶  
+    # ¶ÁÈ¡¶þ½øÖÆÎÄ¼þ 
+    binfile = open(filename, 'rb')  
     buffers = binfile.read()  
   
-    head = struct.unpack_from('>IIII', buffers, 0) # å–å‰4ä¸ªæ•´æ•°ï¼Œè¿”å›žä¸€ä¸ªå…ƒç»„  
+    head = struct.unpack_from('>IIII', buffers, 0) # È¡Ç°4¸öÕûÊý£¬·µ»ØÒ»¸öÔª×é  
   
-    offset = struct.calcsize('>IIII')  # å®šä½åˆ°dataå¼€å§‹çš„ä½ç½®  
+    offset = struct.calcsize('>IIII')  # ¶¨Î»µ½data¿ªÊ¼µÄÎ»ÖÃ  
     imgNum = img_num  #head[1]
     width = head[2]  
     height = head[3]  
   
-    bits = imgNum * width * height  # dataä¸€å…±æœ‰60000*28*28ä¸ªåƒç´ å€¼  
-    bitsString = '>' + str(bits) + 'B'  # fmtæ ¼å¼ï¼š'>47040000B'  
+    bits = imgNum * width * height  # dataÒ»¹²ÓÐ60000*28*28¸öÏñËØÖµ  
+    bitsString = '>' + str(bits) + 'B'  # fmt¸ñÊ½£º'>47040000B'  
   
-    imgs = struct.unpack_from(bitsString, buffers, offset) # å–dataæ•°æ®ï¼Œè¿”å›žä¸€ä¸ªå…ƒç»„  
+    imgs = struct.unpack_from(bitsString, buffers, offset) # È¡dataÊý¾Ý£¬·µ»ØÒ»¸öÔª×é  
   
     binfile.close()  
-    imgs = np.reshape(imgs, [imgNum, width * height]) # reshapeä¸º[60000,784]åž‹æ•°ç»„  
+    imgs = np.reshape(imgs, [imgNum, width * height]) # reshapeÎª[60000,784]ÐÍÊý×é  
   
     return imgs,head
   
   
 def loadLabelSet(filename, label_num):  
   
-    binfile = open(filename, 'rb') # è¯»äºŒè¿›åˆ¶æ–‡ä»¶  
+    binfile = open(filename, 'rb') # ¶Á¶þ½øÖÆÎÄ¼þ  
     buffers = binfile.read()  
   
-    head = struct.unpack_from('>II', buffers, 0) # å–labelæ–‡ä»¶å‰2ä¸ªæ•´å½¢æ•°  
+    head = struct.unpack_from('>II', buffers, 0) # È¡labelÎÄ¼þÇ°2¸öÕûÐÎÊý  
   
     labelNum = label_num #head[1]  
-    offset = struct.calcsize('>II')  # å®šä½åˆ°labelæ•°æ®å¼€å§‹çš„ä½ç½®  
+    offset = struct.calcsize('>II')  # ¶¨Î»µ½labelÊý¾Ý¿ªÊ¼µÄÎ»ÖÃ  
   
-    numString = '>' + str(labelNum) + "B" # fmtæ ¼å¼ï¼š'>60000B'  
-    labels = struct.unpack_from(numString, buffers, offset) # å–labelæ•°æ®  
+    numString = '>' + str(labelNum) + "B" # fmt¸ñÊ½£º'>60000B'  
+    labels = struct.unpack_from(numString, buffers, offset) # È¡labelÊý¾Ý  
   
     binfile.close()  
-    labels = np.reshape(labels, [labelNum,1]) # è½¬åž‹ä¸ºåˆ—è¡¨(ä¸€ç»´æ•°ç»„)  
+    label_vec = []
+    for i in range(labelNum):
+        for j in range(10):
+            if j == labels[i]:
+                label_vec.append(0.9)
+            else:
+                label_vec.append(0.1)
+
+    labels = np.reshape(label_vec, [labelNum,10]) # ×ªÐÍÎªÁÐ±í(Ò»Î¬Êý×é)  
   
     return labels,head
+'''
+    def norm(self, label):
+        label_vec = []
+        label_value = self.to_int(label)
+        for i in range(10):
+            if i == label_value:
+                label_vec.append(0.9)
+            else:
+                label_vec.append(0.1)
+        return label_vec
+'''
+file1 = 'E:/eclipse/eclipse-workspace/MNIST/train-images-idx3-ubyte'
+file2 = 'E:/eclipse/eclipse-workspace/MNIST/train-labels-idx1-ubyte'
+file3 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-images-idx3-ubyte'
+file4 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-labels-idx1-ubyte'
+MNIST_train_data, MNIST_train_data_head = loadImageSet(file1, 6000)
+MNIST_train_label, MNIST_train_label_head = loadLabelSet(file2, 6000)
+MNIST_test_data, MNIST_test_data_head = loadImageSet(file3, 500)
+MNIST_test_label, MNIST_test_label_head = loadLabelSet(file4, 500)
 
-file1 = 'E:/eclipse/eclipse-workspace/MNSIT/train-images-idx3-ubyte'
-file2 = 'E:/eclipse/eclipse-workspace/MNSIT/train-labels-idx1-ubyte'
-file3 = 'E:/eclipse/eclipse-workspace/MNSIT/t10k-images-idx3-ubyte'
-file4 = 'E:/eclipse/eclipse-workspace/MNSIT/t10k-labels-idx1-ubyte'
-MNIST_train_data, MNIST_train_data_head = loadImageSet(file1, 5000)
-MNIST_train_label, MNIST_train_label_head = loadLabelSet(file2, 5000)
-MNIST_test_data, MNIST_test_data_head = loadImageSet(file3, 100)
-MNIST_test_label, MNIST_test_label_head = loadLabelSet(file4, 100)
-
+#print(MNIST_test_label)
