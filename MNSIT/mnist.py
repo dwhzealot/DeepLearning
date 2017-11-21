@@ -50,17 +50,7 @@ def loadLabelSet(filename, label_num):
     labels = np.reshape(label_vec, [labelNum,10]) # 转型为列表(一维数组)  
   
     return labels,head
-'''
-    def norm(self, label):
-        label_vec = []
-        label_value = self.to_int(label)
-        for i in range(10):
-            if i == label_value:
-                label_vec.append(0.9)
-            else:
-                label_vec.append(0.1)
-        return label_vec
-'''
+
 file1 = 'E:/eclipse/eclipse-workspace/MNIST/train-images-idx3-ubyte'
 file2 = 'E:/eclipse/eclipse-workspace/MNIST/train-labels-idx1-ubyte'
 file3 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-images-idx3-ubyte'
