@@ -7,42 +7,42 @@ import struct
   
 def loadImageSet(filename, img_num):  
   
-    binfile = open(filename, 'rb') # ¶ÁÈ¡¶ş½øÖÆÎÄ¼ş  
+    binfile = open(filename, 'rb') # è¯»å–äºŒè¿›åˆ¶æ–‡ä»¶  
     buffers = binfile.read()  
   
-    head = struct.unpack_from('>IIII', buffers, 0) # È¡Ç°4¸öÕûÊı£¬·µ»ØÒ»¸öÔª×é  
+    head = struct.unpack_from('>IIII', buffers, 0) # å–å‰4ä¸ªæ•´æ•°ï¼Œè¿”å›ä¸€ä¸ªå…ƒç»„  
   
-    offset = struct.calcsize('>IIII')  # ¶¨Î»µ½data¿ªÊ¼µÄÎ»ÖÃ  
+    offset = struct.calcsize('>IIII')  # å®šä½åˆ°dataå¼€å§‹çš„ä½ç½®  
     imgNum = img_num  #head[1]
     width = head[2]  
     height = head[3]  
   
-    bits = imgNum * width * height  # dataÒ»¹²ÓĞ60000*28*28¸öÏñËØÖµ  
-    bitsString = '>' + str(bits) + 'B'  # fmt¸ñÊ½£º'>47040000B'  
+    bits = imgNum * width * height  # dataä¸€å…±æœ‰60000*28*28ä¸ªåƒç´ å€¼  
+    bitsString = '>' + str(bits) + 'B'  # fmtæ ¼å¼ï¼š'>47040000B'  
   
-    imgs = struct.unpack_from(bitsString, buffers, offset) # È¡dataÊı¾İ£¬·µ»ØÒ»¸öÔª×é  
+    imgs = struct.unpack_from(bitsString, buffers, offset) # å–dataæ•°æ®ï¼Œè¿”å›ä¸€ä¸ªå…ƒç»„  
   
     binfile.close()  
-    imgs = np.reshape(imgs, [imgNum, width * height]) # reshapeÎª[60000,784]ĞÍÊı×é  
+    imgs = np.reshape(imgs, [imgNum, width * height]) # reshapeä¸º[60000,784]å‹æ•°ç»„  
   
     return imgs,head
   
   
 def loadLabelSet(filename, label_num):  
   
-    binfile = open(filename, 'rb') # ¶Á¶ş½øÖÆÎÄ¼ş  
+    binfile = open(filename, 'rb') # è¯»äºŒè¿›åˆ¶æ–‡ä»¶  
     buffers = binfile.read()  
   
-    head = struct.unpack_from('>II', buffers, 0) # È¡labelÎÄ¼şÇ°2¸öÕûĞÎÊı  
+    head = struct.unpack_from('>II', buffers, 0) # å–labelæ–‡ä»¶å‰2ä¸ªæ•´å½¢æ•°  
   
     labelNum = label_num #head[1]  
-    offset = struct.calcsize('>II')  # ¶¨Î»µ½labelÊı¾İ¿ªÊ¼µÄÎ»ÖÃ  
+    offset = struct.calcsize('>II')  # å®šä½åˆ°labelæ•°æ®å¼€å§‹çš„ä½ç½®  
   
-    numString = '>' + str(labelNum) + "B" # fmt¸ñÊ½£º'>60000B'  
-    labels = struct.unpack_from(numString, buffers, offset) # È¡labelÊı¾İ  
+    numString = '>' + str(labelNum) + "B" # fmtæ ¼å¼ï¼š'>60000B'  
+    labels = struct.unpack_from(numString, buffers, offset) # å–labelæ•°æ®  
   
     binfile.close()  
-    labels = np.reshape(labels, [labelNum]) # ×ªĞÍÎªÁĞ±í(Ò»Î¬Êı×é)  
+    labels = np.reshape(labels, [labelNum,1]) # è½¬å‹ä¸ºåˆ—è¡¨(ä¸€ç»´æ•°ç»„)  
   
     return labels,head
 
