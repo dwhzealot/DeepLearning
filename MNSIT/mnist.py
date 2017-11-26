@@ -3,40 +3,40 @@ import numpy as np
 import struct  
   
 def loadImageSet(filename, img_num):  
-    # ¶ÁÈ¡¶þ½øÖÆÎÄ¼þ 
+    # è¯»å–äºŒè¿›åˆ¶æ–‡ä»¶ 
     binfile = open(filename, 'rb')  
     buffers = binfile.read()  
   
-    head = struct.unpack_from('>IIII', buffers, 0) # È¡Ç°4¸öÕûÊý£¬·µ»ØÒ»¸öÔª×é  
+    head = struct.unpack_from('>IIII', buffers, 0) # å–å‰4ä¸ªæ•´æ•°ï¼Œè¿”å›žä¸€ä¸ªå…ƒç»„  
   
-    offset = struct.calcsize('>IIII')  # ¶¨Î»µ½data¿ªÊ¼µÄÎ»ÖÃ  
+    offset = struct.calcsize('>IIII')  # å®šä½åˆ°dataå¼€å§‹çš„ä½ç½®  
     imgNum = img_num  #head[1]
     width = head[2]  
     height = head[3]  
   
-    bits = imgNum * width * height  # dataÒ»¹²ÓÐ60000*28*28¸öÏñËØÖµ  
-    bitsString = '>' + str(bits) + 'B'  # fmt¸ñÊ½£º'>47040000B'  
+    bits = imgNum * width * height  # dataä¸€å…±æœ‰60000*28*28ä¸ªåƒç´ å€¼  
+    bitsString = '>' + str(bits) + 'B'  # fmtæ ¼å¼ï¼š'>47040000B'  
   
-    imgs = struct.unpack_from(bitsString, buffers, offset) # È¡dataÊý¾Ý£¬·µ»ØÒ»¸öÔª×é  
+    imgs = struct.unpack_from(bitsString, buffers, offset) # å–dataæ•°æ®ï¼Œè¿”å›žä¸€ä¸ªå…ƒç»„  
   
     binfile.close()  
-    imgs = np.reshape(imgs, [imgNum, width * height]) # reshapeÎª[60000,784]ÐÍÊý×é  
+    imgs = np.reshape(imgs, [imgNum, width * height]) # reshapeä¸º[60000,784]åž‹æ•°ç»„  
   
     return imgs,head
   
   
 def loadLabelSet(filename, label_num):  
   
-    binfile = open(filename, 'rb') # ¶Á¶þ½øÖÆÎÄ¼þ  
+    binfile = open(filename, 'rb') # è¯»äºŒè¿›åˆ¶æ–‡ä»¶  
     buffers = binfile.read()  
   
-    head = struct.unpack_from('>II', buffers, 0) # È¡labelÎÄ¼þÇ°2¸öÕûÐÎÊý  
+    head = struct.unpack_from('>II', buffers, 0) # å–labelæ–‡ä»¶å‰2ä¸ªæ•´å½¢æ•°  
   
     labelNum = label_num #head[1]  
-    offset = struct.calcsize('>II')  # ¶¨Î»µ½labelÊý¾Ý¿ªÊ¼µÄÎ»ÖÃ  
+    offset = struct.calcsize('>II')  # å®šä½åˆ°labelæ•°æ®å¼€å§‹çš„ä½ç½®  
   
-    numString = '>' + str(labelNum) + "B" # fmt¸ñÊ½£º'>60000B'  
-    labels = struct.unpack_from(numString, buffers, offset) # È¡labelÊý¾Ý  
+    numString = '>' + str(labelNum) + "B" # fmtæ ¼å¼ï¼š'>60000B'  
+    labels = struct.unpack_from(numString, buffers, offset) # å–labelæ•°æ®  
   
     binfile.close()  
     label_vec = []
@@ -47,7 +47,7 @@ def loadLabelSet(filename, label_num):
             else:
                 label_vec.append(0.1)
 
-    labels = np.reshape(label_vec, [labelNum,10]) # ×ªÐÍÎªÁÐ±í(Ò»Î¬Êý×é)  
+    labels = np.reshape(label_vec, [labelNum,10]) # è½¬åž‹ä¸ºåˆ—è¡¨(ä¸€ç»´æ•°ç»„)  
   
     return labels,head
 
@@ -60,4 +60,51 @@ MNIST_train_label, MNIST_train_label_head = loadLabelSet(file2, 6000)
 MNIST_test_data, MNIST_test_data_head = loadImageSet(file3, 500)
 MNIST_test_label, MNIST_test_label_head = loadLabelSet(file4, 500)
 
-#print(MNIST_test_label)
+# éšæœºåº¦åŽ»å‡ºä¸ªæ•°ä¸ºsample_numçš„æ•°æ®å—
+def mnist_load_random_block(data_filename, label_filename, sample_num):
+
+    datafile = open(data_filename, 'rb')  
+    buffers = datafile.read()  
+  
+    head = struct.unpack_from('>IIII', buffers, 0)  
+  
+    offset = struct.calcsize('>IIII')  
+    imgNum = head[1]
+    width = head[2]  
+    height = head[3]  
+  
+    bits = sample_num * width * height    
+    bitsString = '>' + str(bits) + 'B'  
+  
+    block_num = imgNum // sample_num
+    block_id = np.random.randint(block_num)
+    imgs = struct.unpack_from(bitsString, buffers, offset + (block_id * width * height))
+    
+    datafile.close()  
+    imgs = np.reshape(imgs, [width * height, sample_num])  
+  #########################################################################################
+    labelfile = open(label_filename, 'rb') 
+    buffers = labelfile.read()  
+  
+    head = struct.unpack_from('>II', buffers, 0)   
+  
+    labelNum = head[1]  
+    offset = struct.calcsize('>II')    
+  
+    numString = '>' + str(sample_num) + "B"  
+    
+    labels = struct.unpack_from(numString, buffers, offset + block_id)  
+  
+    labelfile.close()  
+
+    label_vec = []
+    for i in range(sample_num):
+        for j in range(10):
+            if j == labels[i]:
+                label_vec.append(0.9)
+            else:
+                label_vec.append(0.1)
+
+    label_vec = np.reshape(label_vec, [sample_num,10])  
+    labels = label_vec.T
+    return imgs, labels
