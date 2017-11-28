@@ -51,15 +51,6 @@ def loadLabelSet(filename, label_num):
   
     return labels,head
 
-file1 = 'E:/eclipse/eclipse-workspace/MNIST/train-images-idx3-ubyte'
-file2 = 'E:/eclipse/eclipse-workspace/MNIST/train-labels-idx1-ubyte'
-file3 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-images-idx3-ubyte'
-file4 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-labels-idx1-ubyte'
-MNIST_train_data, MNIST_train_data_head = loadImageSet(file1, 6000)
-MNIST_train_label, MNIST_train_label_head = loadLabelSet(file2, 6000)
-MNIST_test_data, MNIST_test_data_head = loadImageSet(file3, 500)
-MNIST_test_label, MNIST_test_label_head = loadLabelSet(file4, 500)
-
 # 随机度去出个数为sample_num的数据块
 def mnist_load_random_block(data_filename, label_filename, sample_num):
 
@@ -108,3 +99,30 @@ def mnist_load_random_block(data_filename, label_filename, sample_num):
     label_vec = np.reshape(label_vec, [sample_num,10])  
     labels = label_vec.T
     return imgs, labels
+  
+  def get_result(vec):
+    max_value_index = 0
+    max_value = 0
+    vec_size = vec.shape
+    m = vec_size[0]
+    result = np.zeros(m)
+    for i in range(m):
+        max_value = 0
+        for j in range(10):
+            if vec[i][j] > max_value:
+                max_value = vec[i][j]
+                result[i] = j
+    return result
+    
+
+def evaluate(test_result_mat, test_labels_mat):
+    test_result = test_result_mat.T
+    test_labels = test_labels_mat.T
+    error = 0
+    total = len(test_result)
+    label = get_result(test_labels)
+    predict = get_result(test_result)
+    for i in range(total):
+        if label[i] != predict[i]:
+            error += 1
+    return float(error) / float(total)
