@@ -83,8 +83,6 @@ A1_test = activate.forward(Z1_test)
 Z2_test = np.dot(W2,A1_test) + b2
 A2_test = activate.forward(Z2_test)
 
-A2_T = A2_test.T
-Y_T = Y_test.T
 
 print('ratio :',evaluate(A2_T, Y_T))
 
