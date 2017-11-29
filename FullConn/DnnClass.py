@@ -109,6 +109,9 @@ class FullConnNetwork (object):
         for i in range(self.l_max):
             dZ_next_layer, W_next_layer = self.layer[self.l_max - i -1].backward(dZ_next_layer, W_next_layer, Y)
         return
+    def Train(self, X, Labels):
+        self.ForwardPropagation(X)
+        self.BackwardPropagation(Labels)
         
         
             
