@@ -15,10 +15,10 @@ file4 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-labels-idx1-ubyte'
 
 
 s = 784
-m = 100
+m = 5000
 m_test = 100
 layer_num = 3
-epoch = 5000
+epoch = 1000
 W_ini_coe = 0.1
 learn_rate = 0.1
 
@@ -32,9 +32,7 @@ network = FullConnNetwork(m, s, layer_num, W_ini_coe ,activator, learn_rate, n)
 
 print('Training start')
 for i in range(epoch):
-    y_out = network.ForwardPropagation(X)
-    #print(y_out)
-    network.BackwardPropagation(Y)
+    network.Train(X, Y)
 
 print('Training end\nTesting start')
 X_test,Lable_test = mnist_load_random_block(file3, file4, m_test)
