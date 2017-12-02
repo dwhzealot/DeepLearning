@@ -1,7 +1,64 @@
 # coding=gbk  
 import numpy as np  
 import struct  
-  
+
+class getDataSet(object):  
+    def __init__(self, dataFileName, labelFileName):
+        # 读取二进制文件 
+        dataBinfile = open(dataFileName, 'rb')  
+        dataBuffers = dataBinfile.read()  
+        dataHead = struct.unpack_from('>IIII', dataBuffers, 0) # 取前4个整数，返回一个元组  
+        dataImgNum = dataHead[1]
+        
+        labelBinfile = open(labelFileName, 'rb') # 读二进制文件  
+        labelBuffers = labelBinfile.read()  
+        labelHead = struct.unpack_from('>II', labelBuffers, 0) # 取label文件前2个整形数  
+        labelNum = labelHead[1]
+
+        assert(dataImgNum == labelNum)
+        self.totalSampleNum = dataImgNum
+
+        dataOffset = struct.calcsize('>IIII')  # 定位到data开始的位置  
+        width = dataHead[2]  
+        height = dataHead[3]  
+      
+        bits = dataImgNum * width * height  # data一共有60000*28*28个像素值  
+        bitsString = '>' + str(bits) + 'B'  # fmt格式：'>47040000B'  
+      
+        dataImgs = struct.unpack_from(bitsString, dataBuffers, dataOffset) # 取data数据，返回一个元组  
+        dataBinfile.close()  
+        self.dataSet = np.reshape(dataImgs,[width * height, dataImgNum]) # reshape为[60000,784]型数组  
+        
+        labelOffset = struct.calcsize('>II')  # 定位到label数据开始的位置  
+        numString = '>' + str(labelNum) + "B" # fmt格式：'>60000B'  
+        labels = struct.unpack_from(numString, labelBuffers, labelOffset) # 取label数据  
+      
+        labelBinfile.close()  
+        label_vec = []
+        for i in range(labelNum):
+            for j in range(10):
+                if j == labels[i]:
+                    label_vec.append(0.9)
+                else:
+                    label_vec.append(0.1)
+
+        labels = np.reshape(label_vec,[labelNum, 10]) # 转型为列表(一维数组)  
+        self.labelSet = labels.T
+    
+    def random_block(self, sample_num):
+        block_num = self.totalSampleNum // sample_num
+        block_id = np.random.randint(block_num)
+        dateBlockSet = self.dataSet[:, block_id:(block_id + sample_num)]
+        #print('random_block',dateBlockSet.shape)
+        dateBlockSet = np.reshape(dateBlockSet, [784, sample_num])
+        
+        labelBlockSet = self.labelSet[:, block_id:(block_id + sample_num)]
+        #print('random_block',labelBlockSet.shape)
+        labelBlockSet = np.reshape(labelBlockSet, [10, sample_num])
+        return dateBlockSet, labelBlockSet
+    
+    
+
 def loadImageSet(filename, img_num):  
     # 读取二进制文件 
     binfile = open(filename, 'rb')  
