@@ -15,14 +15,14 @@ file4 = 'E:/eclipse/eclipse-workspace/MNIST/t10k-labels-idx1-ubyte'
 
 
 s = 784
-m = 5000
+m = 500
 m_test = 100
 layer_num = 3
-epoch = 1000
+epoch = 2000
 W_ini_coe = 0.1
 learn_rate = 0.1
 
-X,Y = mnist_load_random_block(file1, file2, m)
+TrainSet = getDataSet(file1, file2)
 
 print('Dnn3 start')
 activator = SigmoidActivator()
@@ -32,12 +32,13 @@ network = FullConnNetwork(m, s, layer_num, W_ini_coe ,activator, learn_rate, n)
 
 print('Training start')
 for i in range(epoch):
+    X, Y = TrainSet.random_block(m)
     network.Train(X, Y)
 
 print('Training end\nTesting start')
-X_test,Lable_test = mnist_load_random_block(file3, file4, m_test)
+TestSet = getDataSet(file3, file4)
+X_test,Lable_test = TestSet.random_block(m_test)
 Test_result = network.ForwardPropagation(X_test)
-#print('Test_result',Test_result)
 
 print(evaluate(Test_result, Lable_test))
 print('testing end')
