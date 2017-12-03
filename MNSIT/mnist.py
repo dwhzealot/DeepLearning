@@ -2,7 +2,7 @@
 import numpy as np  
 import struct  
 
-class getDataSet(object):  
+class MNIST_getDataSet(object):  
     def __init__(self, dataFileName, labelFileName):
         # 读取二进制文件 
         dataBinfile = open(dataFileName, 'rb')  
