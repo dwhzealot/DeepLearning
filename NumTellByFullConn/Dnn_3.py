@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 '''
-Created on 2017��11��28��
+Created on 2017-11-28
 
 @author: DongWenhao
 '''
@@ -22,7 +22,7 @@ epoch = 2000
 W_ini_coe = 0.1
 learn_rate = 0.1
 
-TrainSet = getDataSet(file1, file2)
+TrainSet = MNIST_getDataSet(file1, file2)
 
 print('Dnn3 start')
 activator = SigmoidActivator()
@@ -36,7 +36,7 @@ for i in range(epoch):
     network.Train(X, Y)
 
 print('Training end\nTesting start')
-TestSet = getDataSet(file3, file4)
+TestSet = MNIST_getDataSet(file3, file4)
 X_test,Lable_test = TestSet.random_block(m_test)
 Test_result = network.ForwardPropagation(X_test)
 
